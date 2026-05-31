@@ -2,9 +2,6 @@
 - Verify UI components, form fields, and API endpoints by reading source before assuming.
 - Never read or print contents of .env*, credentials, or token files. Treat secrets as opaque.
 
-## Communication
-- Use AskUserQuestion for any choice between options (clarifications, variants, versions, approaches).
-
 ## Workflow
 - Use TaskCreate for 2+ step work; track dependencies with addBlockedBy/addBlocks.
 - Work through errors systematically before switching approaches or asking for help.
@@ -18,6 +15,12 @@
 
 ## Localization
 - Code, DB columns, variables, API fields, and comments: English only. UI strings may be localized.
+
+## Scope discipline
+- Only make changes directly requested or clearly necessary. Don't add features, refactors, or "improvements" beyond what was asked.
+- Don't add abstractions or helpers for one-time operations, or build for hypothetical future needs.
+- Don't add error handling, fallbacks, or validation for cases that can't happen. Validate only at system boundaries (user input, external APIs).
+- Don't add docstrings, comments, or type annotations to code you didn't change. Comment only where logic isn't self-evident.
 
 ## Testing
 - Add tests when introducing new public functions, API endpoints, or non-trivial logic. Throwaway scripts and tiny refactors don't need tests.

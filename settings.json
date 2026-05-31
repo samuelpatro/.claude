@@ -4,9 +4,9 @@
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
     "CLAUDE_CODE_NEW_INIT": "1",
     "CLAUDE_CODE_NO_FLICKER": "1",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "400000",
     "EDITOR": "zed --wait",
-    "CLAUDE_CODE_FORK_SUBAGENT": "1"
+    "CLAUDE_CODE_FORK_SUBAGENT": "1",
+    "CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY": "20"
   },
   "attribution": {
     "commit": "",
@@ -93,6 +93,9 @@
       "Bash(php vendor/bin/pint *)",
       "Bash(php vendor/bin/pest *)",
       "Bash(php vendor/bin/phpunit *)",
+      "Bash(vendor/bin/pint *)",
+      "Bash(vendor/bin/pest *)",
+      "Bash(vendor/bin/phpunit *)",
       "mcp__sentry__get_sentry_resource",
       "mcp__sentry__search_issues"
     ],
@@ -136,26 +139,39 @@
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": false,
     "cloudflare@cloudflare": true,
     "guidelines@power-plugins": false,
     "docs@power-plugins": true,
     "code-review@power-plugins": true,
     "git@power-plugins": true,
     "engineering@power-plugins": true,
-    "cloudflare@power-plugins": true
+    "cloudflare@power-plugins": true,
+    "claude-code-wakatime@wakatime": true
   },
   "extraKnownMarketplaces": {
     "cloudflare": {
       "source": {
         "source": "github",
         "repo": "cloudflare/skills"
-      }
+      },
+      "autoUpdate": true
     },
     "power-plugins": {
       "source": {
         "source": "github",
         "repo": "dajanarodriguez/claude-plugins"
+      }
+    },
+    "laravel": {
+      "source": {
+        "source": "github",
+        "repo": "laravel/agent-skills"
+      }
+    },
+    "wakatime": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/wakatime/claude-code-wakatime.git"
       }
     }
   },
@@ -166,15 +182,17 @@
       "Thinking"
     ]
   },
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",
   "tui": "default",
+  "voice": {
+    "enabled": false
+  },
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "skipAutoPermissionPrompt": true
 }
