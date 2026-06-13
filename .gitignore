@@ -27,3 +27,4 @@ ide/
 *.iml
 out
 gen
+.claude/worktrees/

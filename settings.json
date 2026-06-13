@@ -101,36 +101,50 @@
     ],
     "deny": [
       "Bash(sudo *)",
-      "Read(.env*)",
-      "Write(.env*)",
       "Bash(git push --force *)",
-      "Bash(git reset --hard *)",
-      "Bash(git -C *)",
-      "Bash(git --no-pager *)",
-      "Bash(rm -rf ~)",
-      "Bash(rm -rf .)"
+      "Bash(git push --force)",
+      "Bash(git push -f *)",
+      "Bash(git push -f)",
+      "Bash(git push * --force)",
+      "Bash(git push * --force *)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
+      "Bash(git reset --hard *)"
     ],
     "ask": [
-      "Bash(python:*)",
-      "Bash(py:*)",
-      "Bash(wget:*)",
-      "Bash(docker:*)",
-      "Bash(kubectl:*)",
-      "Bash(aws:*)",
-      "Bash(gcloud:*)",
-      "Bash(az:*)",
-      "Bash(bun run deploy*)",
-      "Bash(bun run prod*)",
-      "Bash(bun run publish*)",
-      "Bash(bun run release*)",
-      "Bash(bun run migrate*)",
-      "Bash(git checkout -- *)",
-      "Bash(git push * main*)",
-      "Bash(git push * master*)",
-      "Bash(*--remote*)",
-      "Bash(*wrangler*delete*)"
+      "Bash(git push * main)",
+      "Bash(git push * main *)",
+      "Bash(git push * master)",
+      "Bash(git push * master *)",
+      "Bash(*wrangler* delete *)",
+      "Bash(*wrangler* delete)"
     ],
     "defaultMode": "auto"
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh /Users/Samuel/.claude/hooks/cmux-sidebar-clear.sh"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh /Users/Samuel/.claude/hooks/cmux-sidebar-clear.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -144,9 +158,10 @@
     "docs@power-plugins": true,
     "code-review@power-plugins": true,
     "git@power-plugins": true,
-    "engineering@power-plugins": true,
+    "engineering@power-plugins": false,
     "cloudflare@power-plugins": true,
-    "claude-code-wakatime@wakatime": true
+    "claude-code-wakatime@wakatime": true,
+    "fallow@fallow-skills": true
   },
   "extraKnownMarketplaces": {
     "cloudflare": {
@@ -173,6 +188,12 @@
         "source": "git",
         "url": "https://github.com/wakatime/claude-code-wakatime.git"
       }
+    },
+    "fallow-skills": {
+      "source": {
+        "source": "github",
+        "repo": "fallow-rs/fallow-skills"
+      }
     }
   },
   "spinnerTipsEnabled": false,
@@ -182,7 +203,9 @@
       "Thinking"
     ]
   },
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
+  "autoCompactEnabled": true,
+  "autoCompactWindow": 450000,
   "autoUpdatesChannel": "latest",
   "tui": "default",
   "voice": {
@@ -190,9 +213,25 @@
   },
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Read-only SELECT queries via wrangler d1 execute --remote"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "wrangler commands using --remote that modify or delete data (INSERT/UPDATE/DELETE/DROP statements, d1 database delete, kv/r2 deletes, secret changes)"
+    ],
+    "environment": [
+      "$defaults",
+      "wrangler commands with --remote target production Cloudflare resources (Workers, D1, KV, R2); --local targets a disposable local copy",
+      "wrangler deploy and wrangler publish ship to production"
+    ]
+  }
 }
