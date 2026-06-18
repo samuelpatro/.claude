@@ -114,11 +114,16 @@
     "ask": [
       "Bash(git push * main)",
       "Bash(git push * main *)",
+      "Bash(git push * master)",
+      "Bash(git push * master *)",
       "Bash(*wrangler* delete *)",
       "Bash(*wrangler* delete)"
     ],
     "defaultMode": "auto"
   },
+  "fallbackModel": [
+    "default"
+  ],
   "hooks": {
     "Stop": [
       {
@@ -142,7 +147,13 @@
     ]
   },
   "worktree": {
-    "baseRef": "fresh"
+    "symlinkDirectories": [
+      "node_modules",
+      "vendor",
+      ".cache"
+    ],
+    "baseRef": "fresh",
+    "bgIsolation": "none"
   },
   "statusLine": {
     "type": "command",
@@ -173,13 +184,15 @@
       "source": {
         "source": "github",
         "repo": "dajanarodriguez/claude-plugins"
-      }
+      },
+      "autoUpdate": true
     },
     "laravel": {
       "source": {
         "source": "github",
         "repo": "laravel/agent-skills"
-      }
+      },
+      "autoUpdate": true
     },
     "wakatime": {
       "source": {
@@ -202,7 +215,6 @@
     ]
   },
   "effortLevel": "high",
-  "autoCompactEnabled": true,
   "autoCompactWindow": 450000,
   "autoUpdatesChannel": "latest",
   "tui": "default",
@@ -213,6 +225,7 @@
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
+  "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
