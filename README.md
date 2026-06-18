@@ -81,6 +81,22 @@ Then point `settings.json` at it (use the absolute path with `.exe` on Windows, 
 }
 ```
 
+### Benchmark: binary vs bun vs shell
+
+Mean per-invocation latency over 60 warm-cache runs (macOS, arm64, M-series). A shell rewrite was tested on the hypothesis that avoiding a JS runtime would be faster. It was not.
+
+| Implementation | Command | ms/run |
+| --- | --- | ---: |
+| Compiled binary | `~/.claude/statusline` | ~13.5 |
+| bun on source | `bun ~/.claude/statusline.ts` | ~14.0 |
+| Shell port | `statusline.sh` | ~22.0 |
+
+Takeaways:
+
+- **Shell is the slowest, by ~1.5x.** A faithful shell port forks roughly 15 short-lived processes per render (`jq` x3, `git` x4, `stat`, `date`, `shasum`, `cut`, `basename`, `awk`). On macOS each `fork`/`exec` costs around 1 ms, and that overhead dwarfs any saving from skipping a runtime. The TypeScript version does all parsing, hashing, and formatting in a single process.
+- **The compiled binary beats `bun` on the source by only about 0.5 ms** for a script this small, within run-to-run noise. The `--bytecode --compile` step mainly pays off for large entrypoints; here it is a marginal win. If you would rather not maintain a build, `bun ~/.claude/statusline.ts` is effectively just as fast.
+- Numbers are machine-specific and warm-cache (the git result is cached for 5 s). The ranking holds regardless; absolute values vary by hardware.
+
 ## CLAUDE.md
 
 Global instructions organized into sections:
