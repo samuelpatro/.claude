@@ -28,3 +28,7 @@ ide/
 out
 gen
 .claude/worktrees/
+
+# Compiled status line (per-OS native binary, build locally)
+/statusline
+statusline.exe

@@ -16,13 +16,21 @@ Personal Claude Code configuration with settings, statusline, and plugins.
 Copy and paste this prompt into Claude Code to install globally (into `~/.claude/`):
 
 ```
-Clone https://github.com/Samuell1/.claude into ~/.claude/, merging settings.json, statusline.ts, and CLAUDE.md into my existing global config. Preserve any existing settings and only update the files from the repo.
+Clone https://github.com/samuelpatro/.claude into ~/.claude/, merging settings.json, statusline.ts, statusline.build.ts, and CLAUDE.md into my existing global config. Preserve my existing settings and only update the files from the repo.
+
+Then compile the status line for my OS and wire it up:
+- Run: bun ~/.claude/statusline.build.ts
+- macOS / Linux: this builds ~/.claude/statusline (no extension); settings.json already points there.
+- Windows: it builds ~/.claude/statusline.exe, and ~ is not expanded, so set statusLine.command to the absolute path "%USERPROFILE%\\.claude\\statusline.exe".
 ```
+
+The binary is host-specific, so build it on each machine. If you would rather skip the build, set `statusLine.command` to `bun ~/.claude/statusline.ts` to run the source directly on any OS.
 
 ## What's Inside
 
 - **settings.json** Permissions (allow/deny/ask), enabled plugins, statusline command
 - **statusline.ts** Custom status line with context, git info, model, effort, rate limits, session duration
+- **statusline.build.ts** Compiles the status line to a native per-OS binary (run with bun)
 - **CLAUDE.md** Global instructions for scope, communication, workflow, tooling, localization, testing, and docs
 - **skills/** Personal agent skills (see [Skills](#skills) below)
 
@@ -50,18 +58,26 @@ my-project ⎇ main +5 -2 ↑1 · 12k/200k 6% · Opus 4.7 (high) · 15m
 
 The script does a single combined `git status --porcelain=v2 --branch` call, caches results to a tmp file with a 5 second TTL, and reads stdin synchronously to keep startup latency low.
 
-For even lower latency, compile to a native binary and point `statusLine.command` at the compiled output:
+For the lowest latency it is compiled to a native binary. bun emits a host-native binary (Mach-O on macOS, ELF on Linux, PE on Windows), so the output has no `.exe` on Unix. Build it per machine with the helper script, which names the output correctly for the OS:
 
 ```bash
-bun build --bytecode --compile ~/.claude/statusline.ts --outfile ~/.claude/statusline.exe
+bun ~/.claude/statusline.build.ts
 ```
 
-Then in `settings.json`:
+Or compile directly:
+
+```bash
+bun build --bytecode --compile ~/.claude/statusline.ts --outfile ~/.claude/statusline
+```
+
+On macOS / Linux this produces `~/.claude/statusline` (no extension). On Windows bun automatically appends `.exe`, so the same command produces `~/.claude/statusline.exe`.
+
+Then point `settings.json` at it (use the absolute path with `.exe` on Windows, since `~` is not expanded there):
 
 ```json
 "statusLine": {
   "type": "command",
-  "command": "~/.claude/statusline.exe"
+  "command": "~/.claude/statusline"
 }
 ```
 

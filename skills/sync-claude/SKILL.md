@@ -41,7 +41,7 @@ Direction of flow: config goes live -> repo; this skill itself goes repo -> live
    If it exits non-zero, a possible secret was detected. Stop, show the user the
    flagged line, and do not commit.
 
-3. Review and commit on `master` (this repo commits directly to master, no PR):
+3. Review and commit on `main` (this repo commits directly to main, no PR):
 
    ```
    git diff
