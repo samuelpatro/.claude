@@ -114,8 +114,6 @@
     "ask": [
       "Bash(git push * main)",
       "Bash(git push * main *)",
-      "Bash(git push * master)",
-      "Bash(git push * master *)",
       "Bash(*wrangler* delete *)",
       "Bash(*wrangler* delete)"
     ],
