@@ -24,6 +24,7 @@ Clone https://github.com/Samuell1/.claude into ~/.claude/, merging settings.json
 - **settings.json** Permissions (allow/deny/ask), enabled plugins, statusline command
 - **statusline.ts** Custom status line with context, git info, model, effort, rate limits, session duration
 - **CLAUDE.md** Global instructions for scope, communication, workflow, tooling, localization, testing, and docs
+- **skills/** Personal agent skills (see [Skills](#skills) below)
 
 ## Status Line
 
@@ -75,6 +76,17 @@ Global instructions organized into sections:
 - **Localization** Code, DB columns, variables, API fields, and comments in English only. UI text may be localized
 - **Testing** Tests required for new public functions, API endpoints, and non trivial logic
 - **Docs** No em dashes or sentence joining hyphens as punctuation, docs go in `/docs/` folder
+
+## Skills
+
+Personal agent skills in `skills/`. Each is a `SKILL.md` that Claude loads on demand when the task matches its description.
+
+- **prototype** Clone an existing design (a live website captured via the browser, or in repo components and design tokens) into a faithful standalone `.html`, then generate variations on top and recommend one. Never touches the real app.
+- **real-prototype** Implement design variants directly on the real app route with a live frosted glass switcher (URL synced, gated out of production), judged against real data, then fold the winner into the real code.
+- **to-issues** Break a plan, spec, or PRD into tracer bullet vertical slices and publish them as GitHub issues, attached as native sub issues under a parent tracking issue. Adapts to each repo's existing labels.
+- **flow** Verify a change end to end in the current worktree: detect the change set (working changes, a PR, a ref, or a worktree), run the relevant tests, drive the browser, and report a verdict. Read only on git, never switches or creates worktrees.
+- **herd-worktree** Serve the current git worktree as a Laravel Herd site and rewrite its `.env` to match.
+- **sync-claude** Sync the live `~/.claude` config (settings.json, CLAUDE.md, statusline.ts) into this repo. Allowlist based, so credentials and transcripts are never copied.
 
 ## MCP Servers
 
