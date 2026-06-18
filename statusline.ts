@@ -145,6 +145,7 @@ type GitInfo = {
   deletions: number;
   ahead: number;
   behind: number;
+  repoName?: string;
 };
 
 const GIT_CACHE_TTL_MS = 5000;
@@ -215,6 +216,22 @@ if (!gitInfo) {
         }
       }
     }
+    // In a worktree, cwd's basename is the worktree name (== input.worktree.name),
+    // so showing it as the dir would duplicate the ⧉ segment. Resolve the parent
+    // repo's name from the shared git dir to show instead. Cached with the rest.
+    if (input.worktree) {
+      try {
+        let commonDir = execFileSync(
+          "git",
+          ["-C", cwd, "rev-parse", "--git-common-dir"],
+          gitOpts,
+        ).trim();
+        if (commonDir) {
+          if (!commonDir.startsWith("/")) commonDir = join(cwd, commonDir);
+          gitInfo.repoName = basename(commonDir.replace(/\/\.git\/?$/, ""));
+        }
+      } catch {}
+    }
   } catch {}
   if (ranGit) {
     try {
@@ -231,9 +248,15 @@ const gitAhead = gitInfo.ahead;
 const gitBehind = gitInfo.behind;
 
 // ── LINE 1: Dir (branch) │ Context % │ Model │ Effort ──
-let line1 = `${cyan}${dirName}${rst}`;
+// In a worktree, prefer the parent repo's name so the dir segment isn't a
+// duplicate of the ⧉ worktree name (they're the same folder basename).
+const projectName = input.worktree && gitInfo.repoName ? gitInfo.repoName : dirName;
+let line1 = `${cyan}${projectName}${rst}`;
 if (input.worktree) {
-  line1 += ` ${magenta}⧉ ${input.worktree.name}${rst}`;
+  // Drop the ⧉ segment if it would just repeat the dir name (repo name unknown).
+  if (input.worktree.name && input.worktree.name !== projectName) {
+    line1 += ` ${magenta}⧉ ${input.worktree.name}${rst}`;
+  }
   if (input.worktree.original_branch) {
     line1 += `${dim} ← ${input.worktree.original_branch}${rst}`;
   }
