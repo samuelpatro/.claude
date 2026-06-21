@@ -30,12 +30,12 @@ function formatTokens(num: number): string {
 }
 
 function colorForPct(pct: number): string {
-  // Ascending severity (green -> yellow -> orange -> red). Stays green through
-  // the first two thirds so a half-full context reads as calm; warning colors
-  // only kick in as it approaches the compaction limit.
-  if (pct >= 90) return red;
-  if (pct >= 80) return orange;
-  if (pct >= 65) return yellow;
+  // Ascending severity (green -> yellow -> orange -> red). Green holds through
+  // most of the budget so a comfortably-filled context reads as calm; warning
+  // colors cluster near the compaction limit.
+  if (pct >= 95) return red;
+  if (pct >= 88) return orange;
+  if (pct >= 80) return yellow;
   return green;
 }
 
