@@ -151,8 +151,7 @@
       "vendor",
       ".cache"
     ],
-    "baseRef": "fresh",
-    "bgIsolation": "none"
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -220,6 +219,7 @@
   "voice": {
     "enabled": false
   },
+  "autoMemoryEnabled": true,
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
