@@ -96,10 +96,27 @@ if (!input) {
 }
 
 
+// ── Load ~/.claude/settings.json once (context window + effort) ──
+let settings: any = {};
+try {
+  const home = process.env.HOME ?? process.env.USERPROFILE;
+  if (home) {
+    settings = JSON.parse(readFileSync(join(home, ".claude", "settings.json"), "utf8"));
+  }
+} catch {}
+
 // ── Extract JSON data ───────────────────────────────────
 const modelName: string = (input.model?.display_name ?? "Claude").replace(/\s*\(.*?\)/, "");
 
-const size: number = input.context_window?.context_window_size || 1000000;
+// Denominator matches what `/context` shows. When auto-compact is enabled the
+// context is effectively capped at autoCompactWindow (compaction triggers there),
+// so divide by that instead of the model's full window. Fall back to the model
+// size when auto-compact is off or no window is configured.
+const modelSize: number = input.context_window?.context_window_size || 1000000;
+const autoCompactOn = settings.autoCompactEnabled !== false;
+const compactWindow: number = Number(settings.autoCompactWindow) || 0;
+const size: number =
+  autoCompactOn && compactWindow > 0 ? Math.min(compactWindow, modelSize) : modelSize;
 const inputTokens: number = input.context_window?.current_usage?.input_tokens ?? 0;
 const cacheCreate: number = input.context_window?.current_usage?.cache_creation_input_tokens ?? 0;
 const cacheRead: number = input.context_window?.current_usage?.cache_read_input_tokens ?? 0;
@@ -126,13 +143,7 @@ try {
 // legacy `input.effort_level` and finally to settings.json on disk.
 let effort: string = input.effort?.level ?? input.effort_level ?? "default";
 if (effort === "default") {
-  try {
-    const home = process.env.HOME ?? process.env.USERPROFILE;
-    if (home) {
-      const settings = JSON.parse(readFileSync(join(home, ".claude", "settings.json"), "utf8"));
-      effort = settings.effortLevel ?? "default";
-    }
-  } catch {}
+  effort = settings.effortLevel ?? "default";
 }
 
 // ── Git info ────────────────────────────────────────────
