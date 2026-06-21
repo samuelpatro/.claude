@@ -30,9 +30,12 @@ function formatTokens(num: number): string {
 }
 
 function colorForPct(pct: number): string {
+  // Ascending severity (green -> yellow -> orange -> red). Stays green through
+  // the first two thirds so a half-full context reads as calm; warning colors
+  // only kick in as it approaches the compaction limit.
   if (pct >= 90) return red;
-  if (pct >= 70) return yellow;
-  if (pct >= 50) return orange;
+  if (pct >= 80) return orange;
+  if (pct >= 65) return yellow;
   return green;
 }
 
@@ -284,7 +287,7 @@ if (gitAhead > 0 || gitBehind > 0) {
 }
 line1 += sep;
 line1 += `${colorForPct(pctUsed)}${formatTokens(current)}/${formatTokens(size)} ${pctUsed}%${rst}`;
-if (current > 256_000) {
+if (pctUsed >= 90) {
   line1 += ` ${red}⚠${rst}`;
 }
 line1 += sep;
