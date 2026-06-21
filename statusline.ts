@@ -40,10 +40,12 @@ function colorForPct(pct: number): string {
 }
 
 function mutedColorForPct(pct: number): string {
-  if (pct >= 80) return red;
-  if (pct >= 70) return "\x1b[38;2;170;150;50m";
-  if (pct >= 50) return "\x1b[38;2;180;135;75m";
-  return "\x1b[38;2;60;135;75m";
+  // Ascending severity (green -> yellow -> orange -> red). Rate limits are a
+  // harder wall than compaction, so warn earlier than the context bar does.
+  if (pct >= 85) return red;
+  if (pct >= 70) return "\x1b[38;2;180;135;75m"; // muted orange
+  if (pct >= 50) return "\x1b[38;2;170;150;50m"; // muted yellow
+  return "\x1b[38;2;60;135;75m"; // muted green
 }
 
 function effortStyle(level: string): string {
@@ -287,7 +289,7 @@ if (gitAhead > 0 || gitBehind > 0) {
 }
 line1 += sep;
 line1 += `${colorForPct(pctUsed)}${formatTokens(current)}/${formatTokens(size)} ${pctUsed}%${rst}`;
-if (pctUsed >= 90) {
+if (pctUsed >= 95) {
   line1 += ` ${red}⚠${rst}`;
 }
 line1 += sep;
