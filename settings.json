@@ -166,7 +166,7 @@
     "code-review@power-plugins": true,
     "git@power-plugins": true,
     "engineering@power-plugins": false,
-    "cloudflare@power-plugins": true,
+    "cloudflare@power-plugins": false,
     "claude-code-wakatime@wakatime": true,
     "fallow@fallow-skills": true
   },
