@@ -324,18 +324,40 @@ const rateLimits = input.rate_limits;
 let rateLine = "";
 
 if (rateLimits?.five_hour) {
-  const fhPct = Math.round(rateLimits.five_hour.used_percentage ?? 0);
-  const sdPct = rateLimits.seven_day ? Math.round(rateLimits.seven_day.used_percentage ?? 0) : 0;
+  const fh = rateLimits.five_hour;
+  const sd = rateLimits.seven_day;
+  const fhPct = Math.round(fh.used_percentage ?? 0);
+  const sdPct = sd ? Math.round(sd.used_percentage ?? 0) : 0;
+  const parts: string[] = [];
 
-  if (fhPct >= 10 || sdPct >= 10) {
-    const fhReset = formatResetTime(rateLimits.five_hour.resets_at, "time");
-    rateLine += `${gray}5h:${rst} ${mutedColorForPct(fhPct)}${fhPct}%${rst} ${gray}⟳ ${fhReset}${rst}`;
+  // Show a window's gauge only once it is worth watching (>= 50% used);
+  // below that it is just noise.
+  if (fhPct >= 50) {
+    parts.push(
+      `${gray}5h:${rst} ${mutedColorForPct(fhPct)}${fhPct}%${rst} ${gray}⟳ ${formatResetTime(fh.resets_at, "time")}${rst}`,
+    );
+  }
+  if (sd && sdPct >= 50) {
+    parts.push(
+      `${gray}7d:${rst} ${mutedColorForPct(sdPct)}${sdPct}%${rst} ${gray}⟳ ${formatResetTime(sd.resets_at, "datetime")}${rst}`,
+    );
+  }
 
-    if (rateLimits.seven_day) {
-      const sdReset = formatResetTime(rateLimits.seven_day.resets_at, "datetime");
-      rateLine += `${sep}${gray}7d:${rst} ${mutedColorForPct(sdPct)}${sdPct}%${rst} ${gray}⟳ ${sdReset}${rst}`;
+  // Tokenmax nudge: lots of weekly quota still unused (< 50%) but the reset is
+  // imminent (<= 24h), so it is about to vanish. Only fires in that final
+  // window — no nagging for the whole stretch before reset.
+  if (sd && sdPct < 50) {
+    const r = sd.resets_at;
+    const d = typeof r === "number" ? new Date(r * 1000) : r ? new Date(r) : null;
+    if (d && !isNaN(d.getTime())) {
+      const hrs = Math.ceil((d.getTime() - Date.now()) / 3_600_000);
+      if (hrs > 0 && hrs <= 24) {
+        parts.push(`${magenta}⚡ tokenmax: 7d resets in ${hrs}h (${sdPct}% used)${rst}`);
+      }
     }
   }
+
+  rateLine = parts.join(sep);
 }
 
 
