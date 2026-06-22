@@ -48,14 +48,15 @@ function hsv(h: number, s: number, v: number): string {
   return `\x1b[38;2;${to(r)};${to(g)};${to(b)}m`;
 }
 
-// Continuous green -> red gradient by fill %. Hue holds at green (120) until the
-// sweep point, then slides smoothly to red (0) by 100%, so there is no banding
-// and the color only runs hot as it nears the compaction limit.
+// Continuous green -> red gradient by fill %. Hue holds at a calm emerald (145)
+// until the sweep point, then slides smoothly to red (0) by 100%. Saturation and
+// value rise with t so the green end stays soft while the red end runs vivid, and
+// the color only gets hot as it nears the compaction limit.
 function colorForPct(pct: number): string {
   const p = Math.max(0, Math.min(100, pct));
   const SWEEP_START = 70;
   const t = p <= SWEEP_START ? 0 : (p - SWEEP_START) / (100 - SWEEP_START);
-  return hsv(120 * (1 - t), 0.82, 0.9);
+  return hsv(145 * (1 - t), 0.6 + 0.32 * t, 0.8 + 0.1 * t);
 }
 
 function mutedColorForPct(pct: number): string {
