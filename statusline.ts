@@ -13,6 +13,7 @@ const yellow = "\x1b[38;2;230;200;0m";
 const magenta = "\x1b[38;2;180;140;255m";
 const blue = "\x1b[38;2;100;149;237m";
 const gray = "\x1b[38;2;140;140;140m";
+const muted = "\x1b[38;2;150;150;156m";
 const dim = "\x1b[2m";
 const bold = "\x1b[1m";
 const rst = "\x1b[0m";
@@ -29,14 +30,32 @@ function formatTokens(num: number): string {
   return String(num);
 }
 
+// HSV -> truecolor SGR string. h in [0,360), s & v in [0,1].
+function hsv(h: number, s: number, v: number): string {
+  const c = v * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = v - c;
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (h < 60) (r = c), (g = x);
+  else if (h < 120) (r = x), (g = c);
+  else if (h < 180) (g = c), (b = x);
+  else if (h < 240) (g = x), (b = c);
+  else if (h < 300) (r = x), (b = c);
+  else (r = c), (b = x);
+  const to = (n: number) => Math.round((n + m) * 255);
+  return `\x1b[38;2;${to(r)};${to(g)};${to(b)}m`;
+}
+
+// Continuous green -> red gradient by fill %. Hue holds at green (120) until the
+// sweep point, then slides smoothly to red (0) by 100%, so there is no banding
+// and the color only runs hot as it nears the compaction limit.
 function colorForPct(pct: number): string {
-  // Ascending severity (green -> yellow -> orange -> red). Green holds through
-  // most of the budget so a comfortably-filled context reads as calm; warning
-  // colors cluster near the compaction limit.
-  if (pct >= 95) return red;
-  if (pct >= 88) return orange;
-  if (pct >= 80) return yellow;
-  return green;
+  const p = Math.max(0, Math.min(100, pct));
+  const SWEEP_START = 70;
+  const t = p <= SWEEP_START ? 0 : (p - SWEEP_START) / (100 - SWEEP_START);
+  return hsv(120 * (1 - t), 0.82, 0.9);
 }
 
 function mutedColorForPct(pct: number): string {
@@ -267,7 +286,7 @@ const gitBehind = gitInfo.behind;
 // In a worktree, prefer the parent repo's name so the dir segment isn't a
 // duplicate of the ⧉ worktree name (they're the same folder basename).
 const projectName = input.worktree && gitInfo.repoName ? gitInfo.repoName : dirName;
-let line1 = `${cyan}${projectName}${rst}`;
+let line1 = `${muted}${projectName}${rst}`;
 if (input.worktree) {
   // Drop the ⧉ segment if it would just repeat the dir name (repo name unknown).
   if (input.worktree.name && input.worktree.name !== projectName) {
@@ -293,7 +312,7 @@ if (pctUsed >= 95) {
   line1 += ` ${red}⚠${rst}`;
 }
 line1 += sep;
-line1 += `${orange}${modelName} ${effortStyle(effort)}(${effort})${rst}`;
+line1 += `${muted}${modelName}${rst} ${effortStyle(effort)}(${effort})${rst}`;
 if (sessionDuration) {
   line1 += sep;
   line1 += `${gray}${sessionDuration}${rst}`;
